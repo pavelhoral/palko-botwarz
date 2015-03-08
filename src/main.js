@@ -7,14 +7,21 @@ var Main = function(client, data) {
     this.game = game = new Game(client.config().nickname, data);
 
     var swarm = null,
-        lastId = -1,
         timer = null;
+
+    var last = null;
 
     var onUpdate = function(data) {
         game.updateGame(data);
-        if (lastId !== (data.lastCmdId || 0)) {
-            lastId = data.lastCmdId || 0;
-            setTimeout(onPlay, 205);
+        if (last && data.lastCmdId === last.cmdId && !last.timer) {
+            // We need to wait
+            last.timer = setTimeout(function() {
+                last.confirmed = true;
+                onPlay();
+            }, 201);
+        } else if (!last || last.confirmed) {
+            // We can play
+            onPlay();
         }
     };
 
@@ -22,18 +29,22 @@ var Main = function(client, data) {
         if (!swarm) {
             swarm = new Swarm(game);
         }
-        if (game.getPlayerBots(false).length) {
-            var commands =  swarm.getCommands();
+        if (!game.getPlayerBots(false).length) {
+            return;
+        }
+        var commands =  swarm.getCommands();
+        if (commands.length) {
             console.log('### ' + JSON.stringify(swarm.getState()));
-            client.write({ cmdId: lastId + 1, bots: commands });
+            last = { cmdId: last ? last.cmdId + 1 : 1, bots: commands };
+            client.write(last);
         }
     };
 
     client.on('update', onUpdate);
     this.destroy = function() {
         client.removeListener('update', onUpdate);
-        if (timer) {
-            clearTimeout(timer);
+        if (last && last.timer) {
+            clearTimeout(last.timer);
         }
     };
 

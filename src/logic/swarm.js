@@ -16,7 +16,10 @@ var Swarm = function(game) {
             }
         });
         Object.keys(robots).forEach(function(id) {
-            commands.push(robots[id].getCommand());
+            var command = robots[id].getCommand();
+            if (command) {
+                commands.push(command);
+            }
         });
         return commands;
     };

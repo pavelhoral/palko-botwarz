@@ -47,9 +47,12 @@ var Robot = function(id, game) {
             // Slow down so that we can turn faster
             return { id: id, cmd: 'brake' };
         }
-        // Turn head on towards enemy
-        this.state.steer = angle;
-        return { id: id, cmd: 'steer', angle: steer };
+        if (steer > 0) {
+            // Turn head on towards enemy
+            this.state.steer = angle;
+            return { id: id, cmd: 'steer', angle: steer };
+        }
+        return null;
     };
 
     this.attackCommand = function() {
@@ -83,9 +86,12 @@ var Robot = function(id, game) {
             // Slow down so that we can turn faster
             return { id: id, cmd: 'brake' };
         }
-        // Turn head on towards enemy
-        this.state.steer = angle;
-        return { id: id, cmd: 'steer', angle: steer };
+        if (steer > 0) {
+            // Turn head on towards enemy
+            this.state.steer = angle;
+            return { id: id, cmd: 'steer', angle: steer };
+        }
+        return null;
     };
 
 };
