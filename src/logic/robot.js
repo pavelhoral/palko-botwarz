@@ -23,7 +23,7 @@ var Robot = function(id, game) {
             this.dodge();
         }
         if (!this.command && this.score.defend[0].score > this.score.attack[0].score) {
-            this.state = { defence: this.score.attack[0].id };
+            this.state = { defence: this.score.defend[0].id };
             this.defend();
         }
         if (!this.command && this.score.avoid.length) {
@@ -31,7 +31,7 @@ var Robot = function(id, game) {
             this.avoid();
         }
         if (!this.command) {
-            this.state = { attack: this.score.defend[0].id };
+            this.state = { attack: this.score.attack[0].id };
             this.attack();
         }
         return this.command;
@@ -54,7 +54,7 @@ var Robot = function(id, game) {
             // We are running
             return;
         }
-        if (this.score.defend[0].rsteert > 1 && this.score.defend[0].steert > 4 && !game.isMinSpeed(this.data.speed)) {
+        if (this.score.defend[0].rsteert > 1 && this.score.defend[0].steert > 5 && !game.isMinSpeed(this.data.speed)) {
             // Slow down so that we can turn faster
             this.command = { id: id, cmd: 'brake' };
         } else if (Math.floor(this.score.defend[0].steer) != 0) {

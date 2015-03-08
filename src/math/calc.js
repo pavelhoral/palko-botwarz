@@ -33,7 +33,7 @@ calc.cycles = function(distance, speed, duration) {
     if (!duration) {
         duration = DEFAULT_CYCLE_DURATION;
     }
-    return distance / speed /  duration;
+    return Math.abs(distance) / speed /  duration;
 };
 
 /**

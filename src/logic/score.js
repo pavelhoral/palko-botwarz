@@ -11,10 +11,13 @@ types.attack = function(bot, other, game) {
         score: 1000 / other.distance,
         ram: false
     };
-    if (calc.angle(bot.angle, other.direction) < 10) {
+    if (calc.angle(bot.angle, other.ndirection) < 10) {
         // We can RAM the enemy
-        result.ram = true;
         result.score *= 2;
+        if (calc.angle(bot.angle, other.ndirection) < 5) {
+            // We are looking right at him
+            result.ram = true;
+        }
         if (calc.rangle(other.angle, other.direction) > 45) {
             // He is even looking away
             result.score *= 2;
@@ -31,23 +34,15 @@ types.defend = function(bot, other, game) {
         score: 1000 / Math.max(other.distance, 1),
         run: false
     };
-    if (other.distance < 50) {
-        if (other.rsteert <= 3) {
-            // He is almost looking our way
-            result.score *= 2;
-        }
-        if (Math.floor(other.steert) > Math.floor(other.rsteert) && Math.floor(other.steert) > 1) {
-            // We better RUN as he can turn much faster
-            result.score += 1000;
-            result.run = true;
-        }
-        return result;
+    if (other.distance < 50 && other.rsteert < 3) {
+        // He is almost looking our way
+        result.score *= 2;
     }
     if (other.distance < 200 && Math.floor(other.rsteert) <= 1) {
         // He can RAM us
         result.score *= 2;
-        if (other.steert >= 2 && Math.abs(other.steer) < 170) {
-            // Try to RUN as we won't be able to turn in time
+        if (other.rsteert < 1) {
+            // He is aiming directly at us
             result.score += 500;
             result.run = true;
         }

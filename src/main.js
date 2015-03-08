@@ -76,7 +76,7 @@ client.on('result', function(data) {
         status = 'Winner \'' + winner + '\', looser \'' + looser + '\'.';
     }
     console.log('\nThe fight is over! ' +  status + '\n');
-//    process.exit();
+    process.exit();
 });
 
 /**
