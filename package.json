@@ -1,0 +1,9 @@
+{
+  "name": "palko-botwarz",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "carrier": "^0.1.14",
+    "lodash": "^3.4.0"
+  }
+}
