@@ -28,24 +28,24 @@ types.attack = function(bot, other) {
  */
 types.defend = function(bot, other) {
     var result = {
-        score: 1000 / Math.max(other.ndistance, 1),
+        score: 1000 / Math.max(other.distance, 1),
         run: false
     };
     if (other.distance < 50) {
         if (calc.rangle(other.angle, other.direction) < 90) {
             // He is almost looking our way
-            result += 500;
+            result.score *= 2;
         }
         if (calc.angle(bot.angle, other.direction) > calc.rangle(other.angle, other.direction) + 15) {
             // Try to RUN as he can turn much faster
-            result += 1000;
+            result.score += 1000;
             result.run = true;
         }
         return result;
     }
     if (other.distance < 120 && calc.rangle(other.angle, other.direction) < 20) {
         // He can RAM us
-        result.score += 500;
+        result.score *= 2;
         if (calc.angle(bot.angle, other.direction) > 90 && other.speed > 10) {
             // Try to RUN as we won't be able to turn in time
             result.score += 500;
@@ -99,7 +99,10 @@ var sort = function(stats) {
 var create = function(type, bot, others) {
     var result = [];
     others.forEach(function(other) {
-        result.push(_.extend({}, other, types[type](bot, other)));
+        var score = _.extend({}, other, types[type](bot, other));
+        if (score.score > 0) {
+            result.push(score);
+        }
     });
     return sort(result);
 };

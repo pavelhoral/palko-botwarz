@@ -46,11 +46,11 @@ var Game = function(nickname, data) {
     };
 
     this.isMaxSpeed = function(speed) {
-        return game.speedLevels[game.speedLevels.length - 1].speed >= speed;
+        return game.speedLevels[game.speedLevels.length - 1].speed <= speed;
     };
 
     this.isMinSpeed = function(speed) {
-        return game.speedLevels[0].speed <= speed;
+        return game.speedLevels[0].speed >= speed;
     };
 
     this.isAtBoundary = function(bot) {
