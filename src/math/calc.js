@@ -48,7 +48,9 @@ calc.relative = function(bot, other, game) {
     stats.arrivet = calc.cycles(stats.distance - game.getBotRadius() * 2, bot.speed);
     stats.rarrivet = calc.cycles(stats.distance - game.getBotRadius() * 2, other.speed);
     stats.steer = calc.steer(bot.angle, stats.direction);
+    stats.nsteer = calc.steer(bot.angle, stats.ndirection);
     stats.steert = calc.cycles(calc.angle(bot.angle, stats.direction), bot.rspeed, 1);
+    stats.nsteert = calc.cycles(calc.angle(bot.angle, stats.ndirection), bot.rspeed, 1);
     stats.rsteert = calc.cycles(calc.rangle(other.angle, stats.direction), other.rspeed, 1);
     return stats;
 };

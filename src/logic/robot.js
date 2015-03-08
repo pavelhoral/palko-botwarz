@@ -89,12 +89,12 @@ var Robot = function(id, game) {
             // Let's RAM that bastart
             this.state.ram = true;
             this.command = { id: id, cmd: 'accelerate' };
-        } else if (Math.floor(this.score.defend[0].steert) > 3 && !game.isMinSpeed(this.data.speed)) {
+        } else if (Math.floor(this.score.defend[0].nsteert) > 3 && !game.isMinSpeed(this.data.speed)) {
             // Slow down so that we can turn faster
             this.command = { id: id, cmd: 'brake' };
         } else {
             // Turn head on towards enemy
-            this.state.steer = this.score.attack[0].steer;
+            this.state.steer = this.score.attack[0].nsteer;
             this.command = { id: id, cmd: 'steer', angle: game.getSteerAngle(this.data.speed, this.state.steer) };
         }
         return !!this.command;

@@ -15,15 +15,15 @@ var data = {
         {
             nickname: "palko",
             bots: [
-                { id: 'f1', x: 0, y: 0, angle: 0, speed: 0 }
+                { id: 1, x: 0, y: 0, angle: 0, speed: 0 }
             ]
         },
         {
             nickname: "enemy",
             bots: [
-                { id: 'e1', x: 100, y: 100, angle: 0, speed: 0 },
-                { id: 'e2', x: 50, y: 50, angle: 0, speed: 0 },
-                { id: 'e3', x: 100, y: 100, angle: 0, speed: 0 }
+                { id: 6, x: 100, y: 100, angle: 0, speed: 0 },
+                { id: 7, x: 50, y: 50, angle: 0, speed: 0 },
+                { id: 8, x: 100, y: 100, angle: 0, speed: 0 }
             ]
         }
     ]
@@ -35,7 +35,7 @@ var game = new (require('./game/game.js'))('palko', data);
 // Create update
 var update = new (require('./game/update.js'))(
     data
-).filter(['f1', 'e1']);
+).filter([1, 6]);
 
 // Update game
 game.updateGame(update.data);
@@ -45,5 +45,5 @@ var swarm = new (require('./logic/swarm.js'))(game),
     commands = swarm.getCommands();
 
 console.log('SCORE', require('util').inspect(swarm.getScore(), false, 4));
-console.log('COMMANDS', commands);
 console.log('STATE', swarm.getState());
+console.log('COMMANDS', commands);
