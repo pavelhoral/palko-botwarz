@@ -29,10 +29,21 @@ var data = {
     ]
 };
 
+// Create game
 var game = new (require('./game/game.js'))('palko', data);
-game.updateGame(data);
 
-var swarm = new (require('./logic/swarm.js'))(game);
+// Create update
+var update = new (require('./game/update.js'))(
+    data
+).filter(['f1', 'e1']);
 
-console.log(swarm.getCommands());
-console.log(swarm.getState());
+// Update game
+game.updateGame(update.data);
+
+// Process swarm
+var swarm = new (require('./logic/swarm.js'))(game),
+    commands = swarm.getCommands();
+
+console.log('SCORE', require('util').inspect(swarm.getScore(), false, 4));
+console.log('COMMANDS', commands);
+console.log('STATE', swarm.getState());

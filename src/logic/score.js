@@ -43,10 +43,10 @@ types.defend = function(bot, other, game) {
         }
         return result;
     }
-    if (other.distance < 120 && Math.floor(other.rsteert) <= 1) {
+    if (other.distance < 200 && Math.floor(other.rsteert) <= 1) {
         // He can RAM us
         result.score *= 2;
-        if (other.steert >= 2) {
+        if (other.steert >= 2 && Math.abs(other.steer) < 170) {
             // Try to RUN as we won't be able to turn in time
             result.score += 500;
             result.run = true;

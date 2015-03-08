@@ -33,6 +33,14 @@ var Swarm = function(game) {
         return state;
     };
 
+    this.getScore = function() {
+        var score = {};
+        Object.keys(robots).forEach(function(id) {
+            score[id] = robots[id].score
+        });
+        return score;
+    };
+
 };
 
 module.exports = Swarm;
