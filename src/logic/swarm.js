@@ -12,6 +12,7 @@ var Swarm = function(game) {
         var commands = [];
         Object.keys(robots).forEach(function(id) {
             if (!game.getBotById(id)) {
+                console.log('[DEAD] ' + id);
                 delete robots[id];
             }
         });

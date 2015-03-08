@@ -46,10 +46,13 @@ types.defend = function(bot, other) {
     if (other.distance < 120 && calc.rangle(other.angle, other.direction) < 20) {
         // He can RAM us
         result.score *= 2;
-        if (calc.angle(bot.angle, other.direction) > 90 && other.speed > 10) {
-            // Try to RUN as we won't be able to turn in time
-            result.score += 500;
-            result.run = true;
+        if (calc.angle(bot.angle, other.direction) > bot.rspeed) {
+            // Turning will take at least two cycles
+            if (calc.cycles(other.distance, other.speed) < calc.angle(bot.angle, other.direction) / bot.rspeed) {
+                // Try to RUN as we won't be able to turn in time
+                result.score += 500;
+                result.run = true;
+            }
         }
         return result;
     }

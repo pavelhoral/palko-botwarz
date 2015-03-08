@@ -1,2 +1,5 @@
 #!/bin/bash
 node src/main.js | tee battle.log | grep -A 1 'fight is over' #
+if [ `uname -o` = "Cygwin" ]; then #
+  cat `cygpath -W`/Media/ding.wav > /dev/dsp; #
+fi #

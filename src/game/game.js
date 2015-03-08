@@ -1,4 +1,5 @@
-var calc = require('../math/calc.js');
+var _ = require('lodash'),
+    calc = require('../math/calc.js');
 
 var Game = function(nickname, data) {
 
@@ -7,9 +8,11 @@ var Game = function(nickname, data) {
 
     this.updateGame = function(data) {
         bots = {};
+        var self = this;
         data.players.forEach(function(player) {
             player.bots.forEach(function(bot) {
                 bot.enemy = player.nickname !== nickname;
+                bot.rspeed = self.getSteerAngle(bot.speed, 180);
                 bots[bot.id] = calc.next(bot);
             });
         });

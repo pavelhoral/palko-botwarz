@@ -1,6 +1,7 @@
 var _ = require('lodash');
 
-var calc = {};
+var DEFAULT_CYCLE_DURATION = 0.2,
+    calc = {};
 
 /**
  * Get angle of the vector.
@@ -12,17 +13,27 @@ calc.atan = function(dx, dy) {
 /**
  * Calculate next bot position.
  */
-calc.next = function(bot, time) {
-    if (!time) {
-        time = 0.2;
+calc.next = function(bot, duration) {
+    if (!duration) {
+        duration = DEFAULT_CYCLE_DURATION;
     }
     if (!bot.nx) {
-        bot.nx = Math.cos(bot.angle * Math.PI / 180) * bot.speed * time + bot.x;
+        bot.nx = Math.cos(bot.angle * Math.PI / 180) * bot.speed * duration + bot.x;
     }
     if (!bot.ny) {
-        bot.ny = Math.sin(bot.angle * Math.PI / 180) * bot.speed * time + bot.y;
+        bot.ny = Math.sin(bot.angle * Math.PI / 180) * bot.speed * duration + bot.y;
     }
     return bot;
+};
+
+/**
+ * Calculate number of cycles to travel the specified `duration` at the given `speed`.
+ */
+calc.cycles = function(distance, speed, duration) {
+    if (!duration) {
+        duration = DEFAULT_CYCLE_DURATION;
+    }
+    return distance / speed /  duration;
 };
 
 /**
