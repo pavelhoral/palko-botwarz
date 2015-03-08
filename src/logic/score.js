@@ -6,7 +6,7 @@ var types = {};
 /**
  * ATTACK score.
  */
-types.attack = function(bot, other) {
+types.attack = function(bot, other, game) {
     var result = {
         score: 1000 / other.distance,
         ram: false
@@ -26,33 +26,30 @@ types.attack = function(bot, other) {
 /**
  * DEFEND score.
  */
-types.defend = function(bot, other) {
+types.defend = function(bot, other, game) {
     var result = {
         score: 1000 / Math.max(other.distance, 1),
         run: false
     };
     if (other.distance < 50) {
-        if (calc.rangle(other.angle, other.direction) < 90) {
+        if (other.rsteert <= 3) {
             // He is almost looking our way
             result.score *= 2;
         }
-        if (calc.angle(bot.angle, other.direction) > calc.rangle(other.angle, other.direction) + 15) {
-            // Try to RUN as he can turn much faster
+        if (Math.floor(other.steert) > Math.floor(other.rsteert) && Math.floor(other.steert) > 1) {
+            // We better RUN as he can turn much faster
             result.score += 1000;
             result.run = true;
         }
         return result;
     }
-    if (other.distance < 120 && calc.rangle(other.angle, other.direction) < 20) {
+    if (other.distance < 120 && Math.floor(other.rsteert) <= 1) {
         // He can RAM us
         result.score *= 2;
-        if (calc.angle(bot.angle, other.direction) > bot.rspeed) {
-            // Turning will take at least two cycles
-            if (calc.cycles(other.distance, other.speed) < calc.angle(bot.angle, other.direction) / bot.rspeed) {
-                // Try to RUN as we won't be able to turn in time
-                result.score += 500;
-                result.run = true;
-            }
+        if (other.steert >= 2 && other.rarrivet < 4) {
+            // Try to RUN as we won't be able to turn in time
+            result.score += 500;
+            result.run = true;
         }
         return result;
     }
@@ -62,7 +59,7 @@ types.defend = function(bot, other) {
 /**
  * DODGE score.
  */
-types.dodge = function(bot, other) {
+types.dodge = function(bot, other, game) {
     var result = {
         score: 0,
         run: false
@@ -81,7 +78,7 @@ types.dodge = function(bot, other) {
 /**
  * AVOID score.
  */
-types.avoid = function(bot, other) {
+types.avoid = function(bot, other, game) {
     var result = {
         score: 0
     };
@@ -99,7 +96,7 @@ var sort = function(stats) {
     return stats;
 };
 
-var create = function(type, bot, others) {
+var create = function(type, bot, others, game) {
     var result = [];
     others.forEach(function(other) {
         var score = _.extend({}, other, types[type](bot, other));
@@ -110,19 +107,19 @@ var create = function(type, bot, others) {
     return sort(result);
 };
 
-module.exports = function(bot, allies, enemies) {
+module.exports = function(bot, allies, enemies, game) {
     allies = allies.filter(function(other) {
         return other.id != bot.id;
     }).map(function(other) {
-        return calc.relative(bot, other);
+        return calc.relative(bot, other, game);
     });
     enemies = enemies.map(function(other) {
-        return calc.relative(bot, other);
+        return calc.relative(bot, other, game);
     });
     return {
-        attack: create('attack', bot, enemies),
-        defend: create('defend', bot, enemies),
-        dodge: create('dodge', bot, allies),
-        avoid: create('avoid', bot, allies),
+        attack: create('attack', bot, enemies, game),
+        defend: create('defend', bot, enemies, game),
+        dodge: create('dodge', bot, allies, game),
+        avoid: create('avoid', bot, allies, game),
     };
 };

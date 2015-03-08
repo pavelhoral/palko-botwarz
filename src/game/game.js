@@ -38,6 +38,10 @@ var Game = function(nickname, data) {
         return bots[id];
     };
 
+    this.getBotRadius = function() {
+        return game.botRadius;
+    };
+
     this.getSteerAngle = function(speed, angle) {
         var max = 0, abs = Math.abs(angle);
         game.speedLevels.forEach(function(level) {

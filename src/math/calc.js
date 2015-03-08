@@ -27,7 +27,7 @@ calc.next = function(bot, duration) {
 };
 
 /**
- * Calculate number of cycles to travel the specified `duration` at the given `speed`.
+ * Calculate number of cycles to travel the specified `distance` at the given `speed`.
  */
 calc.cycles = function(distance, speed, duration) {
     if (!duration) {
@@ -39,12 +39,17 @@ calc.cycles = function(distance, speed, duration) {
 /**
  * Calculate relative properties of `other` bot in relation to the given `bot`.
  */
-calc.relative = function(bot, other) {
+calc.relative = function(bot, other, game) {
     var stats = _.extend({}, calc.next(other));
     stats.distance = Math.sqrt(Math.pow(bot.x - other.x, 2) + Math.pow(bot.y - other.y, 2));
     stats.direction = this.atan(other.x - bot.x, other.y - bot.y);
     stats.ndistance = Math.sqrt(Math.pow(bot.nx - other.nx, 2) + Math.pow(bot.ny - other.ny, 2));
     stats.ndirection = this.atan(other.nx - bot.nx, other.ny - bot.ny);
+    stats.arrivet = calc.cycles(stats.distance - game.getBotRadius() * 2, bot.speed);
+    stats.rarrivet = calc.cycles(stats.distance - game.getBotRadius() * 2, other.speed);
+    stats.steer = calc.steer(bot.angle, stats.direction);
+    stats.steert = calc.cycles(calc.angle(bot.angle, stats.direction), bot.rspeed, 1);
+    stats.rsteert = calc.cycles(calc.rangle(other.angle, stats.direction), other.rspeed, 1);
     return stats;
 };
 
@@ -54,7 +59,7 @@ calc.relative = function(bot, other) {
 calc.steer = function(angle, target) {
     var right = (target - angle + 360) % 360,
         left = (angle - target + 360) % 360,
-        clockwise = left == right ? Math.random() < 0.5 : right < left;
+        clockwise = right < left;
     return Math.round(clockwise ? right : -left);
 };
 

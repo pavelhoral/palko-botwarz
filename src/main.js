@@ -18,7 +18,7 @@ var Main = function(client, data) {
             last.timer = setTimeout(function() {
                 last.confirmed = true;
                 onPlay();
-            }, 201);
+            }, 205);
         } else if (!last || last.confirmed) {
             // We can play
             onPlay();
