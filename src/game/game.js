@@ -12,7 +12,7 @@ var Game = function(nickname, data) {
         data.players.forEach(function(player) {
             player.bots.forEach(function(bot) {
                 bot.enemy = player.nickname !== nickname;
-                bot.rspeed = self.getSteerAngle(bot.speed, 180);
+                bot.sspeed = self.getSteerAngle(bot.speed, 180);
                 bots[bot.id] = calc.next(bot);
             });
         });

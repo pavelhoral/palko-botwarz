@@ -20,7 +20,7 @@ var Robot = function(id, game) {
         this.command = null;
         if (this.score.dodge.length && this.score.dodge[0].run) {
             this.state.dodge = this.score.dodge[0].id;
-            this.dodge();
+            this.dodge(this.score.dodge[0]);
         }
         if (!this.command && this.score.defend[0].score > this.score.attack[0].score) {
             this.state = { defence: this.score.defend[0].id };
@@ -37,7 +37,7 @@ var Robot = function(id, game) {
         return this.command;
     };
 
-    this.dodge = function() {
+    this.dodge = function(threat) {
         if (this.score.avoid.length) {
             // Blocked by ally, lets hope we will survive for next cycle
             this.state.blocked = this.score.avoid[0].id;
@@ -50,14 +50,14 @@ var Robot = function(id, game) {
     }
 
     this.defend = function() {
-        if (this.score.defend[0].run && this.dodge()) {
+        if (this.score.defend[0].run && this.dodge(this.score.defend[0])) {
             // We are running
             return;
         }
-        if (this.score.defend[0].rsteert > 1 && this.score.defend[0].steert > 5 && !game.isMinSpeed(this.data.speed)) {
+        if (this.score.defend[0].rsteermt > 1 && this.score.defend[0].steermt > 4 && !game.isMinSpeed(this.data.speed)) {
             // Slow down so that we can turn faster
             this.command = { id: id, cmd: 'brake' };
-        } else if (Math.floor(this.score.defend[0].steer) != 0) {
+        } else if (Math.floor(this.score.defend[0].steerm) != 0) {
             // Turn head on towards enemy
             this.state.steer = this.score.defend[0].steer;
             this.command = { id: id, cmd: 'steer', angle: game.getSteerAngle(this.data.speed, this.state.steer) };
@@ -89,7 +89,7 @@ var Robot = function(id, game) {
             // Let's RAM that bastart
             this.state.ram = true;
             this.command = { id: id, cmd: 'accelerate' };
-        } else if (Math.floor(this.score.defend[0].nsteert) > 3 && !game.isMinSpeed(this.data.speed)) {
+        } else if (Math.floor(this.score.attack[0].nsteermt) > 3 && !game.isMinSpeed(this.data.speed)) {
             // Slow down so that we can turn faster
             this.command = { id: id, cmd: 'brake' };
         } else {

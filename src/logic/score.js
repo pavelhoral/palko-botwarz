@@ -8,17 +8,17 @@ var types = {};
  */
 types.attack = function(bot, other, game) {
     var result = {
-        score: 1000 / other.distance,
+        score: 1000 / other.ndistance,
         ram: false
     };
-    if (calc.angle(bot.angle, other.ndirection) < 10) {
+    if (Math.abs(other.steerm) < 10) {
         // We can RAM the enemy
         result.score *= 2;
-        if (calc.angle(bot.angle, other.ndirection) < 5) {
+        if (Math.abs(other.steerm) === 0) {
             // We are looking right at him
             result.ram = true;
         }
-        if (calc.rangle(other.angle, other.direction) > 45) {
+        if (Math.abs(other.rsteerm) > 30) {
             // He is even looking away
             result.score *= 2;
         }
@@ -31,17 +31,17 @@ types.attack = function(bot, other, game) {
  */
 types.defend = function(bot, other, game) {
     var result = {
-        score: 1000 / Math.max(other.distance, 1),
+        score: 1000 / Math.max(other.ndistance, 1),
         run: false
     };
-    if (other.distance < 50 && other.rsteert < 3) {
+    if (other.ndistance < 50 && Math.abs(other.rsteert) < 3) {
         // He is almost looking our way
         result.score *= 2;
     }
-    if (other.distance < 200 && Math.floor(other.rsteert) <= 1) {
+    if (other.ndistance < 200 && Math.floor(Math.abs(other.rsteert)) <= 1) {
         // He can RAM us
         result.score *= 2;
-        if (other.rsteert < 1) {
+        if (Math.abs(other.steert) > 1 && other.rsteert == 0) {
             // He is aiming directly at us
             result.score += 500;
             result.run = true;
@@ -59,10 +59,10 @@ types.dodge = function(bot, other, game) {
         score: 0,
         run: false
     };
-    if (other.distance < 80 && calc.rangle(other.angle, other.direction) < 20) {
+    if (other.distance < 80 && (other.nrsteerm == 0 || other.rsteerm == 0)) {
         // He is going for us
         result.score = 1000 / other.ndistance;
-        if (calc.angle(bot.angle, other.direction) > 60) {
+        if (other.steert > other.arrivet) {
             // Try to RUN as we might not be able to turn in time
             result.run = true;
         }
@@ -77,7 +77,7 @@ types.avoid = function(bot, other, game) {
     var result = {
         score: 0
     };
-    if (other.distance < 200 && calc.angle(bot.angle, other.direction) < 20) {
+    if (other.distance < 200 && (other.steerm == 0 || other.nsteerm == 0)) {
         // He is in our way
         result.score = 1000 / other.distance;
     }

@@ -13,15 +13,12 @@ calc.atan = function(dx, dy) {
 /**
  * Calculate next bot position.
  */
-calc.next = function(bot, duration) {
-    if (!duration) {
-        duration = DEFAULT_CYCLE_DURATION;
-    }
+calc.next = function(bot) {
     if (!bot.nx) {
-        bot.nx = Math.cos(bot.angle * Math.PI / 180) * bot.speed * duration + bot.x;
+        bot.nx = Math.cos(bot.angle * Math.PI / 180) * bot.speed * DEFAULT_CYCLE_DURATION + bot.x;
     }
     if (!bot.ny) {
-        bot.ny = Math.sin(bot.angle * Math.PI / 180) * bot.speed * duration + bot.y;
+        bot.ny = Math.sin(bot.angle * Math.PI / 180) * bot.speed * DEFAULT_CYCLE_DURATION + bot.y;
     }
     return bot;
 };
@@ -33,7 +30,7 @@ calc.cycles = function(distance, speed, duration) {
     if (!duration) {
         duration = DEFAULT_CYCLE_DURATION;
     }
-    return Math.abs(distance) / speed /  duration;
+    return Math.abs(distance) / speed / duration;
 };
 
 /**
@@ -41,18 +38,41 @@ calc.cycles = function(distance, speed, duration) {
  */
 calc.relative = function(bot, other, game) {
     var stats = _.extend({}, calc.next(other));
+    // Current distance and direction
     stats.distance = Math.sqrt(Math.pow(bot.x - other.x, 2) + Math.pow(bot.y - other.y, 2));
     stats.direction = this.atan(other.x - bot.x, other.y - bot.y);
+    // Distance and direction next cycle
     stats.ndistance = Math.sqrt(Math.pow(bot.nx - other.nx, 2) + Math.pow(bot.ny - other.ny, 2));
     stats.ndirection = this.atan(other.nx - bot.nx, other.ny - bot.ny);
+    // Number of cycles before collision
     stats.arrivet = calc.cycles(stats.distance - game.getBotRadius() * 2, bot.speed);
     stats.rarrivet = calc.cycles(stats.distance - game.getBotRadius() * 2, other.speed);
+    // Steering deviation
+    stats.steerd = calc.steerd(stats.distance, game);
+    stats.nsteerd = calc.steerd(stats.ndistance, game);
+    // Steering angles
     stats.steer = calc.steer(bot.angle, stats.direction);
+    stats.steerm = calc.sign(stats.steer) * Math.max(Math.abs(stats.steer) - stats.steerd, 0);
+    stats.rsteer = calc.rsteer(other.angle, stats.direction);
+    stats.rsteerm = calc.sign(stats.rsteer) * Math.max(Math.abs(stats.rsteer) - stats.steerd, 0);
+    // Steering angles for next cycle
     stats.nsteer = calc.steer(bot.angle, stats.ndirection);
-    stats.steert = calc.cycles(calc.angle(bot.angle, stats.direction), bot.rspeed, 1);
-    stats.nsteert = calc.cycles(calc.angle(bot.angle, stats.ndirection), bot.rspeed, 1);
-    stats.rsteert = calc.cycles(calc.rangle(other.angle, stats.direction), other.rspeed, 1);
+    stats.nsteerm = calc.sign(stats.nsteer) * Math.max(Math.abs(stats.nsteer) - stats.nsteerd, 0);
+    stats.nrsteer = calc.rsteer(other.angle, stats.ndirection);
+    stats.nrsteerm = calc.sign(stats.nrsteer) * Math.max(Math.abs(stats.nrsteer) - stats.nsteerd, 0);
+    // Number of cycles to steer
+    stats.steert = calc.cycles(Math.abs(stats.steerm), bot.sspeed, 1);
+    stats.nsteert = calc.cycles(Math.abs(stats.nsteerm), bot.sspeed, 1);
+    stats.rsteert = calc.cycles(Math.abs(stats.rsteerm), other.sspeed, 1);
+    stats.nrsteert = calc.cycles(Math.abs(stats.nrsteerm), other.sspeed, 1);
     return stats;
+};
+
+/**
+ * Get steering angle deviation based on the blade size (90 deg) and bot distance.
+ */
+calc.steerd = function(distance, game) {
+    return Math.atan((Math.sqrt(2) * game.getBotRadius() + game.getBotRadius()) / (2 * distance)) * 180 / Math.PI;
 };
 
 /**
@@ -60,22 +80,21 @@ calc.relative = function(bot, other, game) {
  */
 calc.steer = function(angle, target) {
     var right = (target - angle + 360) % 360,
-        left = (angle - target + 360) % 360,
-        clockwise = right < left;
-    return Math.round(clockwise ? right : -left);
+        left = (angle - target + 360) % 360;
+    return Math.round(right < left ? right : -left);
 };
 
 /**
- * Get angle difference for steering to the defined `target` angle.
+ * Simple signum function.
  */
-calc.angle = function(angle, target) {
-    return Math.min((angle - target + 720) % 360, (target - angle + 720) % 360);
+calc.sign = function(value) {
+    return value < 0 ? -1 : 1;
 };
 
 /**
  * Get angle difference for steering to the opposite direction from the defined `target` angle.
  */
-calc.rangle = function(angle, target) {
+calc.rsteer = function(angle, target) {
     return this.steer(angle, target + 180);
 };
 
