@@ -41,8 +41,12 @@ types.defend = function(bot, other, game) {
     if (other.ndistance < 200 && Math.floor(Math.abs(other.rsteert)) <= 1) {
         // He can RAM us
         result.score *= 2;
-        if (Math.abs(other.steert) > 1 && other.rsteert == 0) {
-            // He is aiming directly at us
+        if (other.distance < 50 && other.rsteert < 1 && other.steert > 1) {
+            // We are next to each other and he will turn next cycle
+            result.score += 500;
+            result.run = true;
+        }  else if (Math.abs(other.steert) > 1 && other.rsteert == 0) {
+            // He is aiming directly at us and we can not turn in one cycle
             result.score += 500;
             result.run = true;
         }
